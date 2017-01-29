@@ -1,5 +1,6 @@
-# This code based on below posting[1]
+# This code based on below posting[1]. Google activitiy references are below[2].
 # [1] https://shiring.github.io/maps/2016/12/30/Standortverlauf_post
+# [2] https://developers.google.com/android/reference/com/google/android/gms/location/DetectedActivity.html
 
 # install.packages('jsonlite')
 # install.packages('ggplot2')
@@ -67,8 +68,23 @@ loc_accu_act_name<-subset(loc_accu_act,
                           act==c('still')|act==c('onFoot')|act==c('inVehicle')|act==c('exitingVehicle')|act==c('onBicycle')|act==c('tilting')&ratio>=80)
 
 korea <- get_map(location = c(lon = 127, lat = 37.56), zoom = 11, maptype='roadmap')
+# korea <- get_map(location = c(lon = 126.98, lat = 37.56), zoom = 11, maptype='toner')
+
 ggmap(korea)
-ggmap(korea) + geom_point(data = loc, aes(x = lon, y = lat), alpha = 0.5, color = "black")
 ggmap(korea) + geom_point(data = loc_accu_act, aes(x = lon, y = lat), alpha = 0.5, color = "black")
-ggmap(korea) + geom_point(data = loc_accu_act_name, aes(x = lon, y = lat, color=as.factor(act)), alpha = 0.5)
-ggmap(korea) + geom_point(data = subset(loc_accu_act_name,act==c('onFoot')), aes(x = lon, y = lat, color=as.factor(act)), alpha = 0.5)
+ggmap(korea) + geom_point(data = loc_accu_act_name, aes(x = lon, y = lat, color=as.factor(act)), size = I(5), alpha = 0.5)
+ggmap(korea) + geom_point(data = subset(loc_accu_act_name,act==c('onFoot')), aes(x = lon, y = lat, color=as.factor(act)), size = I(5), alpha = 0.5)
+
+loc_accu_act_name$date<-as.POSIXlt(loc_accu_act_name$time)
+loc_accu_act_name$wday<-loc_accu_act_name$date$wday
+loc_accu_act_name$mon<-loc_accu_act_name$date$mon+1
+loc_accu_act_name$year<-loc_accu_act_name$date$year+1900
+
+ggmap(korea) + geom_point(data =loc_accu_act_name, aes(x = lon, y = lat, color=as.factor(act)), alpha = 0.5) + facet_wrap(~ year)
+ggmap(korea) + geom_point(data =loc_accu_act_name, aes(x = lon, y = lat, color=as.factor(act)), alpha = 0.5) + facet_wrap(~ mon)
+ggmap(korea) + geom_point(data =loc_accu_act_name, aes(x = lon, y = lat, color=as.factor(act)), alpha = 0.5) + facet_wrap(~ wday)
+
+world <- get_map(location = c(lon = 135.5, lat = 34.8), zoom = 9, maptype='toner')
+world <- get_map(location = c(lon = 135.5, lat = 34.8), zoom = 9, maptype='roadmap')
+ggmap(world)
+ggmap(world) + geom_point(data = subset(loc_accu_act_name,act==c('onFoot')|act==c('still')|act==c('tilting')), aes(x = lon, y = lat, color=as.factor(act)), size = I(5), alpha = 0.8)
