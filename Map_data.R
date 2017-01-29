@@ -84,7 +84,7 @@ ggmap(korea) + geom_point(data =loc_accu_act_name, aes(x = lon, y = lat, color=a
 ggmap(korea) + geom_point(data =loc_accu_act_name, aes(x = lon, y = lat, color=as.factor(act)), alpha = 0.5) + facet_wrap(~ mon)
 ggmap(korea) + geom_point(data =loc_accu_act_name, aes(x = lon, y = lat, color=as.factor(act)), alpha = 0.5) + facet_wrap(~ wday)
 
-world <- get_map(location = c(lon = 135.5, lat = 34.8), zoom = 9, maptype='toner')
+# world <- get_map(location = c(lon = 135.5, lat = 34.8), zoom = 9, maptype='toner')
 world <- get_map(location = c(lon = 135.5, lat = 34.8), zoom = 9, maptype='roadmap')
 ggmap(world)
 ggmap(world) + geom_point(data = subset(loc_accu_act_name,act==c('onFoot')|act==c('still')|act==c('tilting')), aes(x = lon, y = lat, color=as.factor(act)), size = I(5), alpha = 0.8)
