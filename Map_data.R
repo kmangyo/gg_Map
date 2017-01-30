@@ -88,3 +88,23 @@ ggmap(korea) + geom_point(data =loc_accu_act_name, aes(x = lon, y = lat, color=a
 world <- get_map(location = c(lon = 135.5, lat = 34.8), zoom = 9, maptype='roadmap')
 ggmap(world)
 ggmap(world) + geom_point(data = subset(loc_accu_act_name,act==c('onFoot')|act==c('still')|act==c('tilting')), aes(x = lon, y = lat, color=as.factor(act)), size = I(5), alpha = 0.8)
+
+
+# clustering
+loc_japan<- subset(loc_accu_act_name, act==c('onFoot')|act==c('still')|act==c('tilting'))
+loc_japan<- subset(loc_japan, lon>=134.5 & lon<=136.5 & lat>=34 & lat<=35.5)
+ggmap(world) + geom_point(data = loc_japan, aes(x = lon, y = lat, color=as.factor(act)), size = I(3), alpha = 0.8)
+
+# number of cluster. Reference is below
+# http://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
+japan_pst <- data.frame(loc_japan$lon, loc_japan$lat)
+wss <- (nrow(japan_pst)-1)*sum(apply(japan_pst,2,var))
+for (i in 2:10) wss[i] <- sum(kmeans(japan_pst,centers=i)$withinss)
+plot(1:10, wss, type="b", xlab="Number of Clusters",ylab="Within groups sum of squares")
+
+japan_pst_cluster <- kmeans(japan_pst, centers=4, iter.max=10, nstart=100)
+japan_pst$cluster <- factor(japan_pst_cluster$cluster)
+
+plot(japan_pst, col=japan_pst$cluster)
+ggmap(world) + geom_point(data = japan_pst, aes(x = loc_japan.lon, y = loc_japan.lat, color=as.factor(cluster)), size = I(4), alpha = 0.8)
+ggmap(world) + geom_point(data = japan_pst, aes(x = loc_japan.lon, y = loc_japan.lat), size = I(4), alpha = 0.8)
