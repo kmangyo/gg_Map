@@ -61,7 +61,6 @@ activities_list<-cbind(activities_list, activities_list_accu)
 activities_list<-activities_list[c(1:3)]
 names(activities_list)<-c('act','seq','ratio')
 
-
 loc_accu_act<-cbind(loc_accu,activities_list)
 
 loc_accu_act_name<-subset(loc_accu_act, 
@@ -89,13 +88,12 @@ world <- get_map(location = c(lon = 135.5, lat = 34.8), zoom = 9, maptype='roadm
 ggmap(world)
 ggmap(world) + geom_point(data = subset(loc_accu_act_name,act==c('onFoot')|act==c('still')|act==c('tilting')), aes(x = lon, y = lat, color=as.factor(act)), size = I(5), alpha = 0.8)
 
-
 # clustering
 loc_japan<- subset(loc_accu_act_name, act==c('onFoot')|act==c('still')|act==c('tilting'))
 loc_japan<- subset(loc_japan, lon>=134.5 & lon<=136.5 & lat>=34 & lat<=35.5)
 ggmap(world) + geom_point(data = loc_japan, aes(x = lon, y = lat, color=as.factor(act)), size = I(3), alpha = 0.8)
 
-# number of cluster. Reference is below
+# The number of clusters. Reference is below
 # http://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
 japan_pst <- data.frame(loc_japan$lon, loc_japan$lat)
 wss <- (nrow(japan_pst)-1)*sum(apply(japan_pst,2,var))
