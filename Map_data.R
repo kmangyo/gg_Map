@@ -88,14 +88,16 @@ world <- get_map(location = c(lon = 135.5, lat = 34.8), zoom = 9, maptype='roadm
 ggmap(world)
 ggmap(world) + geom_point(data = subset(loc_accu_act_name,act==c('onFoot')|act==c('still')|act==c('tilting')), aes(x = lon, y = lat, color=as.factor(act)), size = I(5), alpha = 0.8)
 
-# clustering
+# Clustering
 loc_japan<- subset(loc_accu_act_name, act==c('onFoot')|act==c('still')|act==c('tilting'))
 loc_japan<- subset(loc_japan, lon>=134.5 & lon<=136.5 & lat>=34 & lat<=35.5)
 ggmap(world) + geom_point(data = loc_japan, aes(x = lon, y = lat, color=as.factor(act)), size = I(3), alpha = 0.8)
 
-# The number of clusters. Reference is below
-# http://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
+# The number of clusters. Reference is below[3].
+# [3] http://stackoverflow.com/questions/15376075/cluster-analysis-in-r-determine-the-optimal-number-of-clusters
 japan_pst <- data.frame(loc_japan$lon, loc_japan$lat)
+ggmap(world) + geom_point(data = japan_pst, aes(x = loc_japan.lon, y = loc_japan.lat), size = I(4), alpha = 0.8)
+
 wss <- (nrow(japan_pst)-1)*sum(apply(japan_pst,2,var))
 for (i in 2:10) wss[i] <- sum(kmeans(japan_pst,centers=i)$withinss)
 plot(1:10, wss, type="b", xlab="Number of Clusters",ylab="Within groups sum of squares")
@@ -105,4 +107,23 @@ japan_pst$cluster <- factor(japan_pst_cluster$cluster)
 
 plot(japan_pst, col=japan_pst$cluster)
 ggmap(world) + geom_point(data = japan_pst, aes(x = loc_japan.lon, y = loc_japan.lat, color=as.factor(cluster)), size = I(4), alpha = 0.8)
-ggmap(world) + geom_point(data = japan_pst, aes(x = loc_japan.lon, y = loc_japan.lat), size = I(4), alpha = 0.8)
+
+# Hierarchical clustering. Reference are below[4,5]
+# [4] https://www.r-bloggers.com/hierarchical-clustering-in-r-2/
+# [5] http://varianceexplained.org/r/kmeans-free-lunch/
+japan_pst_hcluster <- hclust(dist(japan_pst[, 1:2]))
+plot(japan_pst_hcluster)
+
+japan_pst_hcluster_cut <- cutree(japan_pst_hcluster, 4)
+japan_pst$hcluster <- japan_pst_hcluster_cut
+ggmap(world) + geom_point(data = japan_pst, aes(x = loc_japan.lon, y = loc_japan.lat, color=as.factor(hcluster)), size = I(4), alpha = 0.8)
+
+# Result is similiar with other hclust methods.
+japan_pst_hcluster_ave <- hclust(dist(japan_pst[, 1:2]), method = 'single')
+plot(japan_pst_hcluster_ave)
+
+japan_pst_hcluster_ave_cut <- cutree(japan_pst_hcluster_ave, 4)
+japan_pst$hcluster_ave <- japan_pst_hcluster_ave_cut
+ggmap(world) + geom_point(data = japan_pst, aes(x = loc_japan.lon, y = loc_japan.lat, color=as.factor(hcluster_ave)), size = I(4), alpha = 0.8)
+
+ 
